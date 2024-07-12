@@ -1,0 +1,14 @@
+import matplotlib.pyplot as plt 
+import numpy as np 
+import pandas as pd 
+ 
+cr=pd.read_csv("cars.csv") 
+x=cr['Age'] 
+y=cr['Price'] 
+ 
+fig,ax=plt.subplots() 
+ 
+plt.scatter(x,y,color="red",marker="^",s=20) 
+plt.xlabel("Age") 
+plt.ylabel("Price") 
+plt.title("1NT22CS190 Siddharth oji") 
