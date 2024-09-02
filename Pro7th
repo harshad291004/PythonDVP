@@ -1,0 +1,60 @@
+from bokeh.plotting import curdoc, figure, show
+from bokeh.layouts import column, row
+from bokeh.models import Select, ColumnDataSource, HoverTool
+import numpy as np
+
+# Sample data
+x = np.linspace(0, 2 * np.pi, 100)
+y_sin = np.sin(x)
+y_cos = np.cos(x)
+y_tan = np.tan(x)
+
+# Initial plot setup
+line_plot = figure(title="Line Plot: 1NT22CS190 Siddharth Oji", height=300, width=600, y_range=(-1.5, 1.5))
+scatter_plot = figure(title="Scatter Plot: 1NT22CS190 Siddharth Oji", height=300, width=600, y_range=(-1.5, 1.5))
+bar_plot = figure(title="Bar Plot: 1NT22CS190 Siddharth Oji", height=300, width=600, x_range=(0, 2*np.pi))
+
+# Data source for line and scatter plots
+line_source = ColumnDataSource(data=dict(x=x, y=y_sin))
+scatter_source = ColumnDataSource(data=dict(x=x, y=y_sin))
+
+# Line plot
+line = line_plot.line('x', 'y', source=line_source, line_width=2, color="blue")
+line_hover = HoverTool(tooltips=[("X", "@x"), ("Y", "@y")])
+line_plot.add_tools(line_hover)
+
+# Scatter plot
+scatter = scatter_plot.scatter('x', 'y', source=scatter_source, size=8, color="green", marker="circle")
+scatter_hover = HoverTool(tooltips=[("X", "@x"), ("Y", "@y")])
+scatter_plot.add_tools(scatter_hover)
+
+# Bar plot (using abs(y_sin) for positive values only)
+bar_source = ColumnDataSource(data=dict(x=x, y=np.abs(y_sin)))
+bar = bar_plot.vbar(x='x', top='y', source=bar_source, width=0.05, color="orange")
+bar_hover = HoverTool(tooltips=[("X", "@x"), ("Y", "@y")])
+bar_plot.add_tools(bar_hover)
+
+# Dropdown menu to select function
+dropdown_options = ["sin(x)", "cos(x)", "tan(x)"]
+dropdown = Select(title="Function", value="sin(x)", options=dropdown_options)
+
+def update_plot(attrname, old, new):
+    if dropdown.value == "sin(x)":
+        y = np.sin(x)
+    elif dropdown.value == "cos(x)":
+        y = np.cos(x)
+    else:
+        y = np.tan(x)
+    
+    # Update all plot data sources
+    line_source.data = dict(x=x, y=y)
+    scatter_source.data = dict(x=x, y=y)
+    bar_source.data = dict(x=x, y=np.abs(y))  # Bar plot uses absolute values
+
+dropdown.on_change('value', update_plot)
+
+# Layout with multiple plots
+layout = column(dropdown, row(line_plot, scatter_plot, bar_plot))
+
+curdoc().add_root(layout)
+show(layout)
